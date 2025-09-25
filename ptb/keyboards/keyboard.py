@@ -5,20 +5,17 @@ btn_birthday = InlineKeyboardButton("День рождения", callback_data="
 btn_wedding = InlineKeyboardButton("Свадьба", callback_data="wedding")
 btn_school = InlineKeyboardButton("В школу", callback_data="school")
 btn_no_reason = InlineKeyboardButton("Без повода", callback_data="no_reason")
+btn_any_reason = InlineKeyboardButton(
+    "Другой повод",
+    callback_data="any_reason"
+)
 
 # price_menu
 btn_price_500 = InlineKeyboardButton("~500", callback_data="price_500")
 btn_price_1000 = InlineKeyboardButton("~1000", callback_data="price_1000")
 btn_price_2000 = InlineKeyboardButton("~2000", callback_data="price_2000")
-btn_price_any = InlineKeyboardButton("Другая сумма", callback_data="price_any")
-
-# flowers_menu
-btn_flowers_1 = InlineKeyboardButton("Букет 1", callback_data="flowers_1")
-btn_flowers_2 = InlineKeyboardButton("Букет 2", callback_data="flowers_2")
-btn_another_flowers = InlineKeyboardButton(
-    "Выбрать другой букет",
-    callback_data="another_flowers"
-)
+btn_price_more = InlineKeyboardButton("Больше", callback_data="price_more")
+btn_price_any = InlineKeyboardButton("Не важно", callback_data="price_any")
 
 # choose_flowers
 btn_confirm_flowers = InlineKeyboardButton(
@@ -28,6 +25,10 @@ btn_confirm_flowers = InlineKeyboardButton(
 btn_another_flowers = InlineKeyboardButton(
     "Выбрать другой букет",
     callback_data="another_flowers"
+)
+btn_need_consult = InlineKeyboardButton(
+    "Заказать консультацию",
+    callback_data="need_consult"
 )
 
 # opd
@@ -46,10 +47,13 @@ btn_cancel_order = InlineKeyboardButton(
 
 # delivery_date
 btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="data_1")
-btn_date_2 = InlineKeyboardButton("Дата 2", callback_data="data_2")
+
+# delivery_time
+btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
 
 
 # keyboards
+
 main_menu_kb = InlineKeyboardMarkup([
     [btn_birthday],
     [btn_wedding],
@@ -61,18 +65,15 @@ price_kb = InlineKeyboardMarkup([
     [btn_price_500],
     [btn_price_1000],
     [btn_price_2000],
+    [btn_price_more],
     [btn_price_any],
-])
-
-flowers_kb = InlineKeyboardMarkup([
-    [btn_flowers_1],
-    [btn_flowers_2],
-    [btn_another_flowers],
 ])
 
 choose_flowers_kb = InlineKeyboardMarkup([
     [btn_confirm_flowers],
     [btn_another_flowers],
+    [btn_another_flowers],
+    [btn_need_consult],
 ])
 
 opd_kb = InlineKeyboardButton([
@@ -87,5 +88,8 @@ confirm_order_kb = InlineKeyboardMarkup([
 
 delivery_date_kb = InlineKeyboardMarkup([
     [btn_date_1],
-    [btn_date_2],
+])
+
+delivery_time_kb = InlineKeyboardMarkup([
+    [btn_time_1],
 ])
