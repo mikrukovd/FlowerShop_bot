@@ -13,5 +13,4 @@
     DATE,
     TIME,
     CONFIRM_ORDER,
-    COMPLETE_ORDER
-) = range(15)
+) = range(14)

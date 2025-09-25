@@ -185,11 +185,11 @@ async def handler_confirm_order(update, context):
     await query.answer()
 
     if query.data == "confirm_order":
-        await edit_message(query, "Заказ подтвержден!", None)
+        await edit_message(query, "Заказ подтвержден!", main_menu_kb)
 
         # TODO: Тут отправка данных курьеру
 
-        return states_bot.COMPLETE_ORDER
+        return states_bot.MAIN_MENU
 
     elif query.data == "cancel_order":
         await edit_message(query, "Главное меню", main_menu_kb)
