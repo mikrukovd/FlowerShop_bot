@@ -5,7 +5,7 @@ from .utils_handler import (
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
     delivery_time_kb, confirm_order_kb, main_menu_kb, yes_no_kb,
-    remove_flower_kb, opd_kb
+    remove_flower_kb, opd_kb, all_flowers_kb
 )
 
 
@@ -52,9 +52,9 @@ async def handler_flowers(update, context):
         await edit_message(query, text, yes_no_kb)
         return states_bot.REMOVE_FLOWER
 
-    elif query.data == "another_flowers":
-        await edit_message(query, "Выбор бюджета:", price_kb)
-        return states_bot.PRICE_MENU
+    elif query.data == "all_flowers":
+        await edit_message(query, "Букеты из всей коллекции", all_flowers_kb)
+        return states_bot.ALL_FLOWERS
 
     elif query.data == "need_consult":
         # TODO: Тут переход к сценарию консультации
@@ -62,6 +62,19 @@ async def handler_flowers(update, context):
         return states_bot.MAIN_MENU
 
     return states_bot.FLOWERS
+
+
+async def handler_all_flowers(update, context):
+    '''Обработчик всей коллекции букетов'''
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "all_flowers":
+        text = "Ваш букет:\nФото \nСостав: Розы, тюльпаны, лилии\nОписание: Красивый букет\nЦена: 1500 руб."
+        await edit_message(query, text, choose_flowers_kb)
+        return states_bot.FLOWERS
+
+    return states_bot.ALL_FLOWERS
 
 
 async def handler_remove_flower(update, context):

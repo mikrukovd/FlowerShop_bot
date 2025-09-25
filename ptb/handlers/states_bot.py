@@ -4,6 +4,7 @@
     SHADE_MENU,
     PRICE_MENU,
     FLOWERS,
+    ALL_FLOWERS,
     REMOVE_FLOWER,
     OPD,
     NAME,
@@ -13,4 +14,4 @@
     TIME,
     CONFIRM_ORDER,
     COMPLETE_ORDER
-) = range(14)
+) = range(15)

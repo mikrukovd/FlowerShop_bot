@@ -26,15 +26,15 @@ btn_confirm_flowers = InlineKeyboardButton(
     callback_data="confirm_flowers"
 )
 btn_another_flowers = InlineKeyboardButton(
-    "Выбрать другой букет",
-    callback_data="another_flowers"
+    "Посмотреть всю коллекцию",
+    callback_data="all_flowers"
 )
 btn_need_consult = InlineKeyboardButton(
     "Заказать консультацию",
     callback_data="need_consult"
 )
 
-# remove_flower menu
+# remove_flower_menu
 btn_remove_flower = InlineKeyboardButton(
     "Убрать цветок",
     callback_data="remove_flower"
@@ -68,6 +68,12 @@ btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
 btn_yes = InlineKeyboardButton("Да", callback_data="yes")
 btn_no = InlineKeyboardButton("Нет", callback_data="no")
 
+
+# all_flowers
+btn_all_flowers = InlineKeyboardButton(
+    "Все цветы",
+    callback_data="all_flowers"
+)
 
 # keyboards
 
@@ -123,4 +129,8 @@ delivery_time_kb = InlineKeyboardMarkup([
 yes_no_kb = InlineKeyboardMarkup([
     [btn_yes],
     [btn_no],
+])
+
+all_flowers_kb = InlineKeyboardMarkup([
+    [btn_all_flowers],
 ])

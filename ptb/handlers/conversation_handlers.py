@@ -29,6 +29,9 @@ conversation_handler = ConversationHandler(
         states_bot.FLOWERS: [
             CallbackQueryHandler(callback_handlers.handler_flowers)
         ],
+        states_bot.ALL_FLOWERS: [
+            CallbackQueryHandler(callback_handlers.handler_all_flowers)
+        ],
         states_bot.REMOVE_FLOWER: [
             CallbackQueryHandler(callback_handlers.handler_remove_flower)
         ],
