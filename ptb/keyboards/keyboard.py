@@ -76,7 +76,7 @@ choose_flowers_kb = InlineKeyboardMarkup([
     [btn_need_consult],
 ])
 
-opd_kb = InlineKeyboardButton([
+opd_kb = InlineKeyboardMarkup([
     [btn_accept],
     [btn_decline],
 ])
