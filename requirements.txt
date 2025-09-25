@@ -1,2 +1,4 @@
 environs==14.3.0
 python-telegram-bot==22.4
+django>=5.2.6
+pillow>=11.3.0
