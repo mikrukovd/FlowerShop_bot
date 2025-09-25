@@ -10,6 +10,9 @@ btn_any_reason = InlineKeyboardButton(
     callback_data="any_reason"
 )
 
+# shade_menu
+btn_shade = InlineKeyboardButton("Оттенок", callback_data="shade")
+
 # price_menu
 btn_price_500 = InlineKeyboardButton("~500", callback_data="price_500")
 btn_price_1000 = InlineKeyboardButton("~1000", callback_data="price_1000")
@@ -59,6 +62,10 @@ main_menu_kb = InlineKeyboardMarkup([
     [btn_wedding],
     [btn_school],
     [btn_no_reason],
+])
+
+shade_menu_kb = InlineKeyboardMarkup([
+    [btn_shade],
 ])
 
 price_kb = InlineKeyboardMarkup([
