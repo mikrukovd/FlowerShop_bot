@@ -1,5 +1,7 @@
 from . import states_bot
-from .utils_handler import edit_message
+from .utils_handler import (
+    edit_message, send_pdf
+)
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
     delivery_time_kb, confirm_order_kb, main_menu_kb, yes_no_kb,
@@ -73,19 +75,18 @@ async def handler_remove_flower(update, context):
         return states_bot.REMOVE_FLOWER
 
     elif query.data == "no":
-        await edit_message(query, "Согласие с обработкой данных", opd_kb)
+        await query.delete_message()
+        await send_pdf(query, opd_kb)
         return states_bot.OPD
 
     elif query.data.startswith("remove_"):
         removed_flower = query.data.replace("remove_", "")
 
-        if removed_flower == "nothing":
-            text = "Цветок не удален. Переход к соглашению ОПД"
-        else:
-            text = f"Цветок '{removed_flower}' удален из букета"
+        if removed_flower != "nothing":
             context.user_data['removed_flower'] = removed_flower
 
-        await edit_message(query, text, opd_kb)
+        await query.delete_message()
+        await send_pdf(query, opd_kb)
         return states_bot.OPD
 
     return states_bot.REMOVE_FLOWER
@@ -97,11 +98,13 @@ async def handler_opd(update, context):
     await query.answer()
 
     if query.data == "accept":
-        await edit_message(query, "Ввод имени", None)
+        await query.delete_message()
+        await query.message.reply_text("Ввод имени")
         return states_bot.NAME
 
     elif query.data == "decline":
-        await edit_message(query, "Главное меню", main_menu_kb)
+        await query.delete_message()
+        await query.message.reply_text("Главное меню", reply_markup=main_menu_kb)
         return states_bot.MAIN_MENU
 
     return states_bot.OPD
