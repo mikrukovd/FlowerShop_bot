@@ -2,7 +2,7 @@ from ptb.keyboards import keyboard
 from . import states_bot
 
 
-async def start(update):
+async def start(update, context):
     text = "Главное меню"
 
     await update.message.reply_text(
