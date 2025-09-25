@@ -34,6 +34,16 @@ btn_need_consult = InlineKeyboardButton(
     callback_data="need_consult"
 )
 
+# remove_flower menu
+btn_remove_flower = InlineKeyboardButton(
+    "Убрать цветок",
+    callback_data="remove_flower"
+)
+btn_remove_nothing = InlineKeyboardButton(
+    "Не убирать ничего",
+    callback_data="remove_nothing"
+)
+
 # opd
 btn_accept = InlineKeyboardButton("Согласен", callback_data="accept")
 btn_decline = InlineKeyboardButton("Не согласен", callback_data="decline")
@@ -41,7 +51,7 @@ btn_decline = InlineKeyboardButton("Не согласен", callback_data="decli
 # confirm_order
 btn_confirm_order = InlineKeyboardButton(
     "Подтвердить заказ",
-    callback_data="confirm_odrder"
+    callback_data="confirm_order"
 )
 btn_cancel_order = InlineKeyboardButton(
     "Отменить заказ",
@@ -49,10 +59,14 @@ btn_cancel_order = InlineKeyboardButton(
 )
 
 # delivery_date
-btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="data_1")
+btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="date_1")
 
 # delivery_time
 btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
+
+# yes\no
+btn_yes = InlineKeyboardButton("Да", callback_data="yes")
+btn_no = InlineKeyboardButton("Нет", callback_data="no")
 
 
 # keyboards
@@ -62,6 +76,7 @@ main_menu_kb = InlineKeyboardMarkup([
     [btn_wedding],
     [btn_school],
     [btn_no_reason],
+    [btn_any_reason],
 ])
 
 shade_menu_kb = InlineKeyboardMarkup([
@@ -79,8 +94,12 @@ price_kb = InlineKeyboardMarkup([
 choose_flowers_kb = InlineKeyboardMarkup([
     [btn_confirm_flowers],
     [btn_another_flowers],
-    [btn_another_flowers],
     [btn_need_consult],
+])
+
+remove_flower_kb = InlineKeyboardMarkup([
+    [btn_remove_flower],
+    [btn_remove_nothing],
 ])
 
 opd_kb = InlineKeyboardMarkup([
@@ -99,4 +118,9 @@ delivery_date_kb = InlineKeyboardMarkup([
 
 delivery_time_kb = InlineKeyboardMarkup([
     [btn_time_1],
+])
+
+yes_no_kb = InlineKeyboardMarkup([
+    [btn_yes],
+    [btn_no],
 ])
