@@ -1,6 +1,6 @@
 from . import states_bot
 from .utils_handler import (
-    edit_message, send_pdf, format_date_for_display,
+    send_pdf, format_date_for_display,
     format_time_for_display
 )
 from ptb.keyboards.keyboard import (
@@ -16,7 +16,10 @@ async def handler_main_menu(update, context):
     await query.answer()
 
     if query.data == "any_reason":
-        await edit_message(query, "Выбор события:", None)
+        await query.edit_message_text(
+            text="Выбор события:",
+            reply_markup=None
+        )
         return states_bot.OTHER_EVENT
 
     elif query.data.startswith("occasion_"):
@@ -30,7 +33,10 @@ async def handler_main_menu(update, context):
     elif query.data in ["no_reason"]:
         context.user_data['event'] = "Без повода"
 
-    await edit_message(query, "Выбор оттенка:", shade_menu_kb)
+    await query.edit_message_text(
+        text="Выбор оттенка:",
+        reply_markup=shade_menu_kb
+    )
     return states_bot.SHADE_MENU
 
 
@@ -39,7 +45,10 @@ async def handler_shade_menu(update, context):
     query = update.callback_query
     await query.answer()
 
-    await edit_message(query, "Выбор бюджета:", price_kb)
+    await query.edit_message_text(
+        text="Выбор бюджета:",
+        reply_markup=price_kb
+    )
     return states_bot.PRICE_MENU
 
 
@@ -50,7 +59,10 @@ async def handler_price_menu(update, context):
 
     # Заглушка для демонстрации букета
     text = "Ваш букет:\nФото \nСостав: Розы, тюльпаны, лилии\nОписание: Красивый букет\nЦена: 1500 руб."
-    await edit_message(query, text, choose_flowers_kb)
+    await query.edit_message_text(
+        text=text,
+        reply_markup=choose_flowers_kb
+    )
     return states_bot.FLOWERS
 
 
@@ -61,16 +73,25 @@ async def handler_flowers(update, context):
 
     if query.data == "confirm_flowers":
         text = "Хотите убрать какой-нибудь цветок из букета?"
-        await edit_message(query, text, yes_no_kb)
+        await query.edit_message_text(
+            text=text,
+            reply_markup=yes_no_kb
+        )
         return states_bot.REMOVE_FLOWER
 
     elif query.data == "all_flowers":
-        await edit_message(query, "Букеты из всей коллекции", all_flowers_kb)
+        await query.edit_message_text(
+            text="Букеты из всей коллекции",
+            reply_markup=all_flowers_kb
+        )
         return states_bot.ALL_FLOWERS
 
     elif query.data == "need_consult":
         # TODO: Тут переход к сценарию консультации
-        await edit_message(query, "Консультация", main_menu_kb)
+        await query.edit_message_text(
+            text="Консультация",
+            reply_markup=main_menu_kb
+        )
         return states_bot.MAIN_MENU
 
     return states_bot.FLOWERS
@@ -83,7 +104,10 @@ async def handler_all_flowers(update, context):
 
     if query.data == "all_flowers":
         text = "Ваш букет:\nФото \nСостав: Розы, тюльпаны, лилии\nОписание: Красивый букет\nЦена: 1500 руб."
-        await edit_message(query, text, choose_flowers_kb)
+        await query.edit_message_text(
+            text=text,
+            reply_markup=choose_flowers_kb
+        )
         return states_bot.FLOWERS
 
     return states_bot.ALL_FLOWERS
@@ -96,7 +120,10 @@ async def handler_remove_flower(update, context):
 
     if query.data == "yes":
         text = "Какой цветок вы хотите убрать из букета?"
-        await edit_message(query, text, remove_flower_kb)
+        await query.edit_message_text(
+            text=text,
+            reply_markup=remove_flower_kb
+        )
         return states_bot.REMOVE_FLOWER
 
     elif query.data == "no":
@@ -166,7 +193,10 @@ async def handler_date(update, context):
 
     context.user_data['date'] = query.data
     delivery_time_kb = generate_delivery_time_kb(query.data)
-    await edit_message(query, "Выбор времени:", delivery_time_kb)
+    await query.edit_message_text(
+        text="Выбор времени:",
+        reply_markup=delivery_time_kb
+    )
     return states_bot.TIME
 
 
@@ -195,7 +225,10 @@ async def handler_time(update, context):
 Удаленные цветы: {context.user_data.get('removed_flower', 'не удалялись')}
 Цена: 1500 руб.
 """
-    await edit_message(query, order_summary, confirm_order_kb)
+    await query.edit_message_text(
+        text=order_summary,
+        reply_markup=confirm_order_kb
+    )
     return states_bot.CONFIRM_ORDER
 
 
@@ -205,14 +238,20 @@ async def handler_confirm_order(update, context):
     await query.answer()
 
     if query.data == "confirm_order":
-        await edit_message(query, "Заказ подтвержден!", main_menu_kb)
+        await query.edit_message_text(
+            text="Заказ подтвержден!",
+            reply_markup=main_menu_kb
+        )
 
         # TODO: Тут отправка данных курьеру
 
         return states_bot.MAIN_MENU
 
     elif query.data == "cancel_order":
-        await edit_message(query, "Главное меню", main_menu_kb)
+        await query.edit_message_text(
+            text="Главное меню",
+            reply_markup=main_menu_kb
+        )
         return states_bot.MAIN_MENU
 
     return states_bot.CONFIRM_ORDER
