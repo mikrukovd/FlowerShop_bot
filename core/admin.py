@@ -6,6 +6,7 @@ from .models import (
     Occasion,
     Composition,
     Order,
+    Color,
 )
 
 
@@ -18,7 +19,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Bouquet)
 class BouquetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'occasion',)
+    list_display = ('name', 'price', 'occasion','color',)
     search_fields = ('name',)
     list_filter = ('price', 'occasion',)
     filter_horizontal = ('composition',)
@@ -39,5 +40,11 @@ class OccasionAdmin(admin.ModelAdmin):
 
 @admin.register(Composition)
 class CompositionAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(Color)
+class ColorAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)

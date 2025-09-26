@@ -4,6 +4,7 @@ from .models import (
     Bouquet,
     Composition,
     Occasion,
+    Color,
 )
 
 
@@ -26,6 +27,10 @@ def get_all_occasions():
     return list(Occasion.objects.all())
 
 
+def get_all_color():
+    return list(Color.objects.all())
+
+
 def get_bouquet(id):
     return Bouquet.objects.get(id=id)
 
@@ -35,6 +40,7 @@ def get_bouquets(occasion, start_price=None, end_price=None):
         return list(
             Bouquet.objects.filter(
                 occasion=occasion,
+                color=color,
             )
         )
     
@@ -42,13 +48,16 @@ def get_bouquets(occasion, start_price=None, end_price=None):
         return list(
             Bouquet.objects.filter(
                 occasion=occasion, 
+                color=color,
                 price__gte=start_price,
+
             )
         )
 
     return list(
         Bouquet.objects.filter(
             occasion=occasion, 
+            color=color,
             price__gte=start_price,
             price__lte=end_price,
         )

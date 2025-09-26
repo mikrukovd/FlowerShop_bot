@@ -1,5 +1,5 @@
 from .user import User
-from .bouquet import Bouquet, Occasion, Composition
+from .bouquet import Bouquet, Occasion, Composition, Color
 from .order import Order
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     'Order',
     'Occasion',
     'Composition',
+    'Color',
 ]

@@ -34,6 +34,20 @@ class Occasion(models.Model):
         verbose_name_plural = 'Поводы'
 
 
+class Color(models.Model):
+    name = models.CharField(
+        verbose_name='Цветовая гамма',
+        blank=False,
+        null=False,
+        max_length=100,
+        unique=True
+    )
+
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class Bouquet(models.Model):
     name = models.CharField(
         verbose_name='Название',
@@ -67,6 +81,14 @@ class Bouquet(models.Model):
     occasion = models.ForeignKey(
         Occasion,
         verbose_name='Повод',
+        related_name='bouquets',
+        on_delete=models.SET_NULL,
+        blank=False,
+        null=True
+    )
+    color=models.ForeignKey(
+        Color,
+        verbose_name='Цветовая гамма',
         related_name='bouquets',
         on_delete=models.SET_NULL,
         blank=False,
