@@ -1,11 +1,12 @@
 from . import states_bot
 from .utils_handler import (
-    edit_message, send_pdf, format_date_for_display
+    edit_message, send_pdf, format_date_for_display,
+    format_time_for_display
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
-    delivery_time_kb, confirm_order_kb, main_menu_kb, yes_no_kb,
-    remove_flower_kb, opd_kb, all_flowers_kb
+    confirm_order_kb, main_menu_kb, yes_no_kb,
+    remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb
 )
 
 
@@ -153,6 +154,7 @@ async def handler_date(update, context):
     await query.answer()
 
     context.user_data['date'] = query.data
+    delivery_time_kb = generate_delivery_time_kb(query.data)
     await edit_message(query, "Выбор времени:", delivery_time_kb)
     return states_bot.TIME
 
@@ -167,6 +169,9 @@ async def handler_time(update, context):
     raw_date = context.user_data.get('date', '')
     formatted_date = format_date_for_display(raw_date)
 
+    raw_time = context.user_data.get('time', '')
+    formatted_time = format_time_for_display(raw_time)
+
     # Формирование данных заказа
     order_summary = f"""
 Ваш заказ:
@@ -174,7 +179,7 @@ async def handler_time(update, context):
 Телефон: {context.user_data.get('phone', 'Не указан')}
 Адрес: {context.user_data.get('address', 'Не указан')}
 Дата: {formatted_date}
-Время: {context.user_data.get('time', 'Не указано')}
+Время: {formatted_time}
 Удаленные цветы: {context.user_data.get('removed_flower', 'не удалялись')}
 Цена: 1500 руб.
 """

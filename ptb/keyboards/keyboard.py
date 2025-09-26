@@ -64,6 +64,7 @@ btn_cancel_order = InlineKeyboardButton(
 
 
 def generate_delivery_date_kb():
+    '''Генерация клавиатуры выбора даты'''
     weekdays_ru = {
         'Monday': 'пн', 'Tuesday': 'вт', 'Wednesday': 'ср', 'Thursday': 'чт',
         'Friday': 'пт', 'Saturday': 'сб', 'Sunday': 'вс'
@@ -126,7 +127,64 @@ def generate_delivery_date_kb():
 
 
 # delivery_time
-btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
+# btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
+
+
+def generate_delivery_time_kb(callback_date=None):
+    '''Генерация клавиатуры выбора времени с учетом текущего времени'''
+    time_slots = [
+        "09:00", "10:00", "11:00", "12:00",
+        "13:00", "14:00", "15:00", "16:00",
+        "17:00", "18:00", "19:00", "20:00"
+    ]
+
+    # Если передана выбранная дата и это сегодняшний день
+    if callback_date and callback_date.startswith('date_'):
+        selected_date_str = callback_date[5:]
+        today_str = datetime.now().strftime('%Y-%m-%d')
+
+        if selected_date_str == today_str:
+            current_time = datetime.now()
+            current_hour = current_time.hour
+            current_minute = current_time.minute
+
+            # Фильтрует слоты: оставляет только те, которые еще не прошли
+            filtered_slots = []
+            for time_slot in time_slots:
+                slot_hour = int(time_slot.split(':')[0])
+                slot_minute = int(time_slot.split(':')[1])
+
+                if slot_hour > current_hour:
+                    filtered_slots.append(time_slot)
+                elif slot_hour == current_hour and slot_minute > current_minute:
+                    filtered_slots.append(time_slot)
+
+            time_slots = filtered_slots
+
+    buttons = []
+
+    for i in range(0, len(time_slots), 2):  # 2 кнопки в строке
+        row = []
+
+        # Первая кнопка в строке
+        time1 = time_slots[i]
+        row.append(InlineKeyboardButton(
+            time1,
+            callback_data=f"time_{time1.replace(':', '')}"
+        ))
+
+        # Вторая кнопка в строке
+        if i + 1 < len(time_slots):
+            time2 = time_slots[i + 1]
+            row.append(InlineKeyboardButton(
+                time2,
+                callback_data=f"time_{time2.replace(':', '')}"
+            ))
+
+        buttons.append(row)
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # yes\no
 btn_yes = InlineKeyboardButton("Да", callback_data="yes")
@@ -188,9 +246,9 @@ confirm_order_kb = InlineKeyboardMarkup([
 
 delivery_date_kb = generate_delivery_date_kb()
 
-delivery_time_kb = InlineKeyboardMarkup([
-    [btn_time_1],
-])
+# delivery_time_kb = InlineKeyboardMarkup([
+#     [btn_time_1],
+# ])
 
 yes_no_kb = InlineKeyboardMarkup([
     [btn_yes],

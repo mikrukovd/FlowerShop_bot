@@ -27,3 +27,12 @@ def format_date_for_display(date_str):
         return delivery_date.strftime('%d.%m.%Y')
 
     return date_str
+
+
+def format_time_for_display(time_str):
+    '''Форматирует время для отображения'''
+    if time_str.startswith('time_'):
+        time_code = time_str[5:]
+        if len(time_code) == 4:
+            return f"{time_code[:2]}:{time_code[2:]}"
+    return time_str
