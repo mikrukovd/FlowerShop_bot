@@ -56,6 +56,15 @@ conversation_handler = ConversationHandler(
         states_bot.CONFIRM_ORDER: [
             CallbackQueryHandler(callback_handlers.handler_confirm_order)
         ],
+        states_bot.OPD_CONSULT: [
+            CallbackQueryHandler(callback_handlers.handler_opd_consult)
+        ],
+        states_bot.NAME_CONSULT: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, callback_handlers.handler_name_consult)
+        ],
+        states_bot.PHONE_CONSULT: [
+            MessageHandler(filters.TEXT & ~filters.COMMAND, callback_handlers.handler_phone_consult)
+        ],
     },
     fallbacks=[CommandHandler("start", cmd_handlers.start)],
 )

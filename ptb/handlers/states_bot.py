@@ -13,4 +13,7 @@
     DATE,
     TIME,
     CONFIRM_ORDER,
-) = range(14)
+    OPD_CONSULT,
+    NAME_CONSULT,
+    PHONE_CONSULT,
+) = range(17)

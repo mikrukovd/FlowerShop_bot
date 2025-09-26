@@ -1,7 +1,7 @@
 from . import states_bot
 from .utils_handler import (
     send_pdf, format_date_for_display,
-    format_time_for_display, send_order_to_courier
+    format_time_for_display, send_order_to_courier, send_consultation_to_florist
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
@@ -87,12 +87,9 @@ async def handler_flowers(update, context):
         return states_bot.ALL_FLOWERS
 
     elif query.data == "need_consult":
-        # TODO: Тут переход к сценарию консультации
-        await query.edit_message_text(
-            text="Консультация",
-            reply_markup=main_menu_kb
-        )
-        return states_bot.MAIN_MENU
+        await query.delete_message()
+        await send_pdf(query, opd_kb)
+        return states_bot.OPD_CONSULT
 
     return states_bot.FLOWERS
 
@@ -242,8 +239,8 @@ async def handler_confirm_order(update, context):
             text="Заказ подтвержден!",
             reply_markup=main_menu_kb
         )
-        await send_order_to_courier(context, courier_chat_id="")  # TODO: Заменить на реальный ID чата курьера
-
+        # await send_order_to_courier(context, courier_chat_id="")  # TODO: Заменить на ID чата курьера
+        # TODO: Внесение информации о заказе в базу данных
         return states_bot.MAIN_MENU
 
     elif query.data == "cancel_order":
@@ -264,3 +261,43 @@ async def handler_other_event(update, context):
         reply_markup=shade_menu_kb
     )
     return states_bot.SHADE_MENU
+
+
+async def handler_opd_consult(update, context):
+    '''Обработчик согласия с ОПД для консультации'''
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "accept":
+        await query.delete_message()
+        await query.message.reply_text("Ввод имени")
+        return states_bot.NAME_CONSULT
+
+    elif query.data == "decline":
+        await query.delete_message()
+        await query.message.reply_text(
+            "Главное меню",
+            reply_markup=main_menu_kb
+        )
+        return states_bot.MAIN_MENU
+
+    return states_bot.OPD_CONSULT
+
+
+async def handler_name_consult(update, context):
+    '''Обработчик ввода имени для консультации'''
+    context.user_data['consult_name'] = update.message.text
+    await update.message.reply_text("Ввод номера")
+
+    return states_bot.PHONE_CONSULT
+
+
+async def handler_phone_consult(update, context):
+    '''Обработчик ввода телефона для консультации'''
+    context.user_data['consult_phone'] = update.message.text
+    # await send_consultation_to_florist(context, florist_chat_id="")  # TODO: Заменить на ID чата флориста
+    await update.message.reply_text(
+        "Все букеты",
+        reply_markup=all_flowers_kb
+    )
+    return states_bot.ALL_FLOWERS
