@@ -79,10 +79,8 @@ btn_cancel_order = InlineKeyboardButton(
     callback_data="cancel_order"
 )
 
+
 # delivery_date
-# btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="date_1")
-
-
 def generate_delivery_date_kb():
     '''Генерация клавиатуры выбора даты'''
     weekdays_ru = {
@@ -147,9 +145,6 @@ def generate_delivery_date_kb():
 
 
 # delivery_time
-# btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
-
-
 def generate_delivery_time_kb(callback_date=None):
     '''Генерация клавиатуры выбора времени с учетом текущего времени'''
     time_slots = [
