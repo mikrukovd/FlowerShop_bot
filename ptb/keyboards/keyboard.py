@@ -1,4 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from datetime import datetime, timedelta
 
 # main_menu
 btn_birthday = InlineKeyboardButton("День рождения", callback_data="birthday")
@@ -59,7 +60,70 @@ btn_cancel_order = InlineKeyboardButton(
 )
 
 # delivery_date
-btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="date_1")
+# btn_date_1 = InlineKeyboardButton("Дата 1", callback_data="date_1")
+
+
+def generate_delivery_date_kb():
+    weekdays_ru = {
+        'Monday': 'пн', 'Tuesday': 'вт', 'Wednesday': 'ср', 'Thursday': 'чт',
+        'Friday': 'пт', 'Saturday': 'сб', 'Sunday': 'вс'
+    }
+
+    months_ru = {
+        'Jan': 'янв', 'Feb': 'фев', 'Mar': 'мар', 'Apr': 'апр',
+        'May': 'май', 'Jun': 'июн', 'Jul': 'июл', 'Aug': 'авг',
+        'Sep': 'сен', 'Oct': 'окт', 'Nov': 'ноя', 'Dec': 'дек'
+    }
+
+    today = datetime.now()
+    buttons = []
+
+    for i in range(0, 7, 2):  # 2 кнопки в строке
+        row = []
+
+        # Первая кнопка
+        date1 = today + timedelta(days=i)
+        day_ru1 = weekdays_ru[date1.strftime("%A")]
+        month_ru1 = months_ru[date1.strftime("%b")]
+
+        if i == 0:
+            date_str1 = f"Сегодня ({date1.day} {month_ru1})"
+        elif i == 1:
+            date_str1 = f"Завтра ({date1.day} {month_ru1})"
+        else:
+            date_str1 = f"{date1.day} {month_ru1} ({day_ru1})"
+
+        # Формат для бд: YYYY-MM-DD
+        callback_data1 = f"date_{date1.strftime('%Y-%m-%d')}"
+        row.append(InlineKeyboardButton(
+            date_str1, callback_data=callback_data1
+            )
+        )
+
+        # Вторая кнопка
+        if i + 1 < 7:
+            date2 = today + timedelta(days=i+1)
+            day_ru2 = weekdays_ru[date2.strftime("%A")]
+            month_ru2 = months_ru[date2.strftime("%b")]
+
+            if i + 1 == 1:
+                date_str2 = f"Завтра ({date2.day} {month_ru2})"
+            elif i + 1 == 2:
+                date_str2 = f"Послезавтра ({date2.day} {month_ru2})"
+            else:
+                date_str2 = f"{date2.day} {month_ru2} ({day_ru2})"
+
+            callback_data2 = f"date_{date2.strftime('%Y-%m-%d')}"
+            row.append(InlineKeyboardButton(
+                date_str2,
+                callback_data=callback_data2
+                )
+            )
+
+        buttons.append(row)
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # delivery_time
 btn_time_1 = InlineKeyboardButton("Время 1", callback_data="time_1")
@@ -118,9 +182,11 @@ confirm_order_kb = InlineKeyboardMarkup([
     [btn_cancel_order],
 ])
 
-delivery_date_kb = InlineKeyboardMarkup([
-    [btn_date_1],
-])
+# delivery_date_kb = InlineKeyboardMarkup([
+#     [btn_date_1],
+# ])
+
+delivery_date_kb = generate_delivery_date_kb()
 
 delivery_time_kb = InlineKeyboardMarkup([
     [btn_time_1],

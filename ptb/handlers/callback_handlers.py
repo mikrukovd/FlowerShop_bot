@@ -1,6 +1,6 @@
 from . import states_bot
 from .utils_handler import (
-    edit_message, send_pdf
+    edit_message, send_pdf, format_date_for_display
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
@@ -164,13 +164,16 @@ async def handler_time(update, context):
 
     context.user_data['time'] = query.data
 
+    raw_date = context.user_data.get('date', '')
+    formatted_date = format_date_for_display(raw_date)
+
     # Формирование данных заказа
     order_summary = f"""
 Ваш заказ:
 Имя: {context.user_data.get('name', 'Не указано')}
 Телефон: {context.user_data.get('phone', 'Не указан')}
 Адрес: {context.user_data.get('address', 'Не указан')}
-Дата: {context.user_data.get('date', 'Не указана')}
+Дата: {formatted_date}
 Время: {context.user_data.get('time', 'Не указано')}
 Удаленные цветы: {context.user_data.get('removed_flower', 'не удалялись')}
 Цена: 1500 руб.
