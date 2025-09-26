@@ -53,3 +53,18 @@ async def send_order_to_courier(context, courier_chat_id):
         chat_id=courier_chat_id,
         text=order_info
     )
+
+
+async def send_consultation_to_florist(context, florist_chat_id):
+    '''Отправляет заявку на консультацию флористу'''
+
+    consultation_info = f"""
+Новая заявка на консультацию!
+Имя: {context.user_data.get('consult_name', 'Не указано')}
+Телефон: {context.user_data.get('consult_phone', 'Не указан')}
+"""
+
+    await context.bot.send_message(
+        chat_id=florist_chat_id,
+        text=consultation_info
+    )
