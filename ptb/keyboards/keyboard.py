@@ -257,15 +257,7 @@ confirm_order_kb = InlineKeyboardMarkup([
     [btn_cancel_order],
 ])
 
-# delivery_date_kb = InlineKeyboardMarkup([
-#     [btn_date_1],
-# ])
-
 delivery_date_kb = generate_delivery_date_kb()
-
-# delivery_time_kb = InlineKeyboardMarkup([
-#     [btn_time_1],
-# ])
 
 yes_no_kb = InlineKeyboardMarkup([
     [btn_yes],
