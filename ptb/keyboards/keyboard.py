@@ -1,15 +1,35 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
+from core.models.bouquet import Occasion
+
+occasions = Occasion.objects.all()
+occasion_buttons = []
+
+for occasion in occasions:
+    occasion_buttons.append([InlineKeyboardButton(
+        occasion.name,
+        callback_data=f"occasion_{occasion.id}"
+    )])
+btn_no_reason = InlineKeyboardButton("Без повода", callback_data="no_reason")
+btn_any_reason = InlineKeyboardButton("Другой повод", callback_data="any_reason")
+
+# main_menu_with_db
+main_menu_buttons = occasion_buttons + [
+    [btn_no_reason],
+    [btn_any_reason],
+]
+
 
 # main_menu
-btn_birthday = InlineKeyboardButton("День рождения", callback_data="birthday")
-btn_wedding = InlineKeyboardButton("Свадьба", callback_data="wedding")
-btn_school = InlineKeyboardButton("В школу", callback_data="school")
-btn_no_reason = InlineKeyboardButton("Без повода", callback_data="no_reason")
-btn_any_reason = InlineKeyboardButton(
-    "Другой повод",
-    callback_data="any_reason"
-)
+# btn_birthday = InlineKeyboardButton("День рождения", callback_data="birthday")
+# btn_wedding = InlineKeyboardButton("Свадьба", callback_data="wedding")
+# btn_school = InlineKeyboardButton("В школу", callback_data="school")
+# btn_no_reason = InlineKeyboardButton("Без повода", callback_data="no_reason")
+# btn_any_reason = InlineKeyboardButton(
+#     "Другой повод",
+#     callback_data="any_reason"
+# )
+
 
 # shade_menu
 btn_shade = InlineKeyboardButton("Оттенок", callback_data="shade")
@@ -199,13 +219,15 @@ btn_all_flowers = InlineKeyboardButton(
 
 # keyboards
 
-main_menu_kb = InlineKeyboardMarkup([
-    [btn_birthday],
-    [btn_wedding],
-    [btn_school],
-    [btn_no_reason],
-    [btn_any_reason],
-])
+# main_menu_kb = InlineKeyboardMarkup([
+#     [btn_birthday],
+#     [btn_wedding],
+#     [btn_school],
+#     [btn_no_reason],
+#     [btn_any_reason],
+# ])
+
+main_menu_kb = InlineKeyboardMarkup(main_menu_buttons)
 
 shade_menu_kb = InlineKeyboardMarkup([
     [btn_shade],

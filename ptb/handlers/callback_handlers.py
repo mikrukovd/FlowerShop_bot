@@ -5,7 +5,7 @@ from .utils_handler import (
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
-    confirm_order_kb, main_menu_kb, yes_no_kb,
+    confirm_order_kb, main_menu_kb, yes_no_kb, occasions,
     remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb
 )
 
@@ -18,6 +18,17 @@ async def handler_main_menu(update, context):
     if query.data == "any_reason":
         await edit_message(query, "Выбор события:", None)
         return states_bot.OTHER_EVENT
+
+    elif query.data.startswith("occasion_"):
+        occasion_id = query.data.replace("occasion_", "")
+
+        for occasion in occasions:
+            if str(occasion.id) == occasion_id:
+                context.user_data['event'] = occasion.name
+                break
+
+    elif query.data in ["no_reason"]:
+        context.user_data['event'] = "Без повода"
 
     await edit_message(query, "Выбор оттенка:", shade_menu_kb)
     return states_bot.SHADE_MENU
@@ -175,6 +186,7 @@ async def handler_time(update, context):
     # Формирование данных заказа
     order_summary = f"""
 Ваш заказ:
+Событие: {context.user_data.get('event', 'Не указано')}
 Имя: {context.user_data.get('name', 'Не указано')}
 Телефон: {context.user_data.get('phone', 'Не указан')}
 Адрес: {context.user_data.get('address', 'Не указан')}
