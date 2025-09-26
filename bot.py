@@ -1,9 +1,20 @@
-from telegram.ext import ApplicationBuilder
-from ptb.handlers.conversation_handlers import conversation_handler
+import os
+
+import django
 from environs import Env
+from telegram.ext import ApplicationBuilder
+
 
 env = Env()
 env.read_env()
+
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    env.str("DJANGO_SETTINGS_MODULE")
+    )
+django.setup()
+
+from ptb.handlers.conversation_handlers import conversation_handler
 
 
 def main():
