@@ -8,10 +8,7 @@ from telegram.ext import ApplicationBuilder
 env = Env()
 env.read_env()
 
-os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE",
-    env.str("DJANGO_SETTINGS_MODULE")
-    )
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "flowers_shop.settings")
 django.setup()
 
 from ptb.handlers.conversation_handlers import conversation_handler
