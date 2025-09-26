@@ -1,7 +1,7 @@
 from . import states_bot
 from .utils_handler import (
     send_pdf, format_date_for_display,
-    format_time_for_display
+    format_time_for_display, send_order_to_courier
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
@@ -242,8 +242,7 @@ async def handler_confirm_order(update, context):
             text="Заказ подтвержден!",
             reply_markup=main_menu_kb
         )
-
-        # TODO: Тут отправка данных курьеру
+        await send_order_to_courier(context, courier_chat_id="")  # TODO: Заменить на реальный ID чата курьера
 
         return states_bot.MAIN_MENU
 
