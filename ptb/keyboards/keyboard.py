@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
-from core.services import get_all_occasions, get_all_colors
+from core.services import get_all_occasions, get_all_colors, get_all_bouquets
 
 # TODO: нужно будет переписать по другому
 occasions = get_all_occasions()
@@ -207,14 +207,24 @@ def generate_delivery_time_kb(callback_date=None):
 btn_yes = InlineKeyboardButton("Да", callback_data="yes")
 btn_no = InlineKeyboardButton("Нет", callback_data="no")
 
-#back_to_main_menu
+# back_to_main_menu
 btn_back_to_main_menu = InlineKeyboardButton("Вернуться в главное меню", callback_data="back_to_main_menu")
 
+
 # all_flowers
-btn_all_flowers = InlineKeyboardButton(
-    "Все цветы",
-    callback_data="all_flowers"
-)
+def generate_all_bouquets_kb():
+    '''Генерация клавиатуры со всеми букетами'''
+    bouquets = get_all_bouquets()
+    buttons = []
+
+    for bouquet in bouquets:
+        buttons.append([InlineKeyboardButton(
+            bouquet.name,
+            callback_data=f"bouquet_{bouquet.id}"
+        )])
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # keyboards
 
@@ -258,9 +268,7 @@ yes_no_kb = InlineKeyboardMarkup([
     [btn_no],
 ])
 
-all_flowers_kb = InlineKeyboardMarkup([
-    [btn_all_flowers],
-])
+all_flowers_kb = generate_all_bouquets_kb()
 
 back_to_main_menu_kb = InlineKeyboardMarkup([
     [btn_back_to_main_menu]

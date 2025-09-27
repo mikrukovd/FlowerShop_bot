@@ -35,33 +35,22 @@ def get_bouquet(id):
     return Bouquet.objects.get(id=id)
 
 
-def get_bouquets(occasion, start_price=None, end_price=None):
-    if not start_price:
-        return list(
-            Bouquet.objects.filter(
-                occasion=occasion,
-                color=color,
-            )
-        )
-    
-    if not end_price:
-        return list(
-            Bouquet.objects.filter(
-                occasion=occasion, 
-                color=color,
-                price__gte=start_price,
+def get_bouquets(occasion, color=None, start_price=None, end_price=None):
+    filters = {}
 
-            )
-        )
+    if occasion:
+        filters['occasion'] = occasion
 
-    return list(
-        Bouquet.objects.filter(
-            occasion=occasion, 
-            color=color,
-            price__gte=start_price,
-            price__lte=end_price,
-        )
-    )
+    if color:
+        filters['color'] = color
+
+    if start_price is not None:
+        filters['price__gte'] = start_price
+
+    if end_price is not None:
+        filters['price__lte'] = end_price
+
+    return list(Bouquet.objects.filter(**filters))
 
 
 def create_order(user, name, address, phone, bouquet, delivery_date):
@@ -73,3 +62,7 @@ def create_order(user, name, address, phone, bouquet, delivery_date):
         bouquet=bouquet,
         delivery_date=delivery_date,
     )
+
+
+def get_bouquet_composition_names(bouquet):
+    return [comp.name for comp in bouquet.composition.all()]

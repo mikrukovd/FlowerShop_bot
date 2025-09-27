@@ -1,4 +1,5 @@
-import asyncio
+import random
+from asgiref.sync import sync_to_async
 from . import states_bot
 from .utils_handler import (
     send_pdf, format_date_for_display,
@@ -10,7 +11,16 @@ from ptb.keyboards.keyboard import (
     remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
     back_to_main_menu_kb
 )
-from core.services import get_all_colors
+from core.services import ( 
+    get_all_colors, get_bouquets, get_bouquet,
+    get_all_bouquets, get_bouquet_composition_names
+)
+
+async_get_all_colors = sync_to_async(get_all_colors)
+async_get_bouquets = sync_to_async(get_bouquets)
+async_get_bouquet = sync_to_async(get_bouquet)
+async_get_all_bouquets = sync_to_async(get_all_bouquets)
+async_get_bouquet_composition_names = sync_to_async(get_bouquet_composition_names)
 
 
 async def handler_main_menu(update, context):
@@ -53,7 +63,7 @@ async def handler_shade_menu(update, context):
     if query.data.startswith("color_"):
         color_id = query.data.replace("color_", "")
 
-        colors = await asyncio.to_thread(get_all_colors)
+        colors = await async_get_all_colors()
 
         for color in colors:
             if str(color.id) == color_id:
@@ -76,12 +86,44 @@ async def handler_price_menu(update, context):
     query = update.callback_query
     await query.answer()
 
-    # Заглушка для демонстрации букета
-    text = ("🌸 *Ваш идеальный букет!* 🌸\n\n"
-            "*Этот букет несет в себе всю нежность ваших чувств и не способен оставить равнодушным ни одно сердце!*\n\n"
-            "*Состав:* Розы, тюльпаны, лилии\n"
-            "*Стоимость:* 1500 руб.\n\n"
-            "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
+    occasion_id = context.user_data.get('occasion_id')
+    color_id = context.user_data.get('color_id')
+
+    price_filters = {}
+
+    if query.data == "price_500":
+        price_filters = {'start_price': 0, 'end_price': 500}
+    elif query.data == "price_1000":
+        price_filters = {'start_price': 501, 'end_price': 1000}
+    elif query.data == "price_2000":
+        price_filters = {'start_price': 1001, 'end_price': 2000}
+    elif query.data == "price_more":
+        price_filters = {'start_price': 2001}
+    elif query.data == "price_any":
+        price_filters = {}
+
+    bouquets = await async_get_bouquets(
+        occasion=occasion_id,
+        color=color_id,
+        **price_filters
+    )
+
+    if bouquets:
+        bouquet = random.choice(bouquets)
+        context.user_data['selected_bouquet'] = bouquet.id
+
+        composition_names = await async_get_bouquet_composition_names(bouquet)
+        composition_text = ", ".join(composition_names)
+
+        text = (f"🌸 *{bouquet.name}* 🌸\n\n"
+                f"{bouquet.discription}\n\n"
+                f"*Состав:* {composition_text}\n"
+                f"*Стоимость:* {bouquet.price} руб.\n\n"
+                "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
+    else:
+        text = ("😔 *К сожалению, по вашим параметрам ничего не найдено*\n\n"
+                "Попробуйте изменить критерии поиска или посмотрите всю нашу коллекцию")
+        context.user_data['selected_bouquet'] = None
 
     await query.edit_message_text(
         text=text,
@@ -97,6 +139,13 @@ async def handler_flowers(update, context):
     await query.answer()
 
     if query.data == "confirm_flowers":
+        if not context.user_data.get('selected_bouquet'):
+            await query.edit_message_text(
+                text="❌ Не удалось найти подходящий букет. Попробуйте изменить параметры поиска.",
+                reply_markup=main_menu_kb
+            )
+            return states_bot.MAIN_MENU
+
         text = "Хотите убрать какой-нибудь цветок из букета?"
         await query.edit_message_text(
             text=text,
@@ -104,12 +153,35 @@ async def handler_flowers(update, context):
         )
         return states_bot.REMOVE_FLOWER
 
-    elif query.data == "all_flowers":  # TODO: Тут нужна функция для рандомного вывода букета
+    elif query.data == "all_flowers":
         await query.edit_message_text(
-            text="🔄 Подбираем другой вариант из нашей коллекции...",
-            reply_markup=all_flowers_kb
+            text="🌸 *Вся наша коллекция букетов:*",
+            reply_markup=all_flowers_kb,
+            parse_mode='Markdown'
         )
         return states_bot.ALL_FLOWERS
+
+    elif query.data.startswith("bouquet_"):
+        bouquet_id = query.data.replace("bouquet_", "")
+
+        selected_bouquet = await async_get_bouquet(int(bouquet_id))
+        context.user_data['selected_bouquet'] = selected_bouquet.id
+
+        composition_names = await async_get_bouquet_composition_names(selected_bouquet)
+        composition_text = ", ".join(composition_names)
+
+        text = (f"🌸 *{selected_bouquet.name}* 🌸\n\n"
+                f"{selected_bouquet.discription}\n\n"
+                f"*Состав:* {composition_text}\n"
+                f"*Стоимость:* {selected_bouquet.price} руб.\n\n"
+                "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
+
+        await query.edit_message_text(
+            text=text,
+            reply_markup=choose_flowers_kb,
+            parse_mode='Markdown'
+        )
+        return states_bot.FLOWERS
 
     elif query.data == "need_consult":
         await query.delete_message()
@@ -124,11 +196,19 @@ async def handler_all_flowers(update, context):
     query = update.callback_query
     await query.answer()
 
-    if query.data == "all_flowers":
-        text = ("🌸 *Еще один прекрасный вариант!* 🌸\n\n"
-                "*Этот букет — символ восхищения и радости, который подчеркнет вашу уникальность.*\n\n"
-                "*Состав:* Розы, тюльпаны, лилии\n"
-                "*Стоимость:* 1500 руб.\n\n"
+    if query.data.startswith("bouquet_"):
+        bouquet_id = query.data.replace("bouquet_", "")
+
+        selected_bouquet = await async_get_bouquet(int(bouquet_id))
+        context.user_data['selected_bouquet'] = selected_bouquet.id
+
+        composition_names = await async_get_bouquet_composition_names(selected_bouquet)
+        composition_text = ", ".join(composition_names)
+
+        text = (f"🌸 *{selected_bouquet.name}* 🌸\n\n"
+                f"{selected_bouquet.discription}\n\n"
+                f"*Состав:* {composition_text}\n"
+                f"*Стоимость:* {selected_bouquet.price} руб.\n\n"
                 "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
 
         await query.edit_message_text(
