@@ -11,7 +11,7 @@ from ptb.keyboards.keyboard import (
     generate_remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
     back_to_main_menu_kb
 )
-from core.services import ( 
+from core.services import (
     get_all_colors, get_bouquets, get_bouquet,
     get_all_bouquets, get_bouquet_composition_names
 )
@@ -275,8 +275,13 @@ async def handler_opd(update, context):
         return states_bot.NAME
 
     elif query.data == "decline":
+        text = '''✨ *Превратим эмоции в цветы!*
+
+Каждый букет — это история. Для какого момента создадим вашу?
+• Готовые поводы ниже
+• Или свой особенный случай'''
         await query.delete_message()
-        await query.message.reply_text("Главное меню", reply_markup=main_menu_kb)
+        await query.message.reply_text(text=text, reply_markup=main_menu_kb)
         return states_bot.MAIN_MENU
 
     return states_bot.OPD
@@ -386,9 +391,14 @@ async def handler_back_to_main(update, context):
     '''Обработчик возврата в главное меню'''
     query = update.callback_query
     await query.answer()
+    text = '''✨ *Превратим эмоции в цветы!*
+
+Каждый букет — это история. Для какого момента создадим вашу?
+• Готовые поводы ниже
+• Или свой особенный случай'''
 
     await query.edit_message_text(
-        text="Главное меню",
+        text=text,
         reply_markup=main_menu_kb
     )
     return states_bot.MAIN_MENU
@@ -416,9 +426,14 @@ async def handler_opd_consult(update, context):
         return states_bot.NAME_CONSULT
 
     elif query.data == "decline":
+        text = '''✨ *Превратим эмоции в цветы!*
+
+Каждый букет — это история. Для какого момента создадим вашу?
+• Готовые поводы ниже
+• Или свой особенный случай'''
         await query.delete_message()
         await query.message.reply_text(
-            "Главное меню",
+            text=text,
             reply_markup=main_menu_kb
         )
         return states_bot.MAIN_MENU
