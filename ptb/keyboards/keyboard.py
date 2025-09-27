@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
-from core.services import get_all_occasions
+from core.services import get_all_occasions, get_all_colors
 
 # TODO: нужно будет переписать по другому
 occasions = get_all_occasions()
@@ -22,7 +22,19 @@ main_menu_buttons = occasion_buttons + [
 
 
 # shade_menu
-btn_shade = InlineKeyboardButton("Оттенок", callback_data="shade")
+def generate_shade_kb():
+    '''Генерация клавиатуры выбора оттенка'''
+    colors = get_all_colors()
+    buttons = []
+
+    for color in colors:
+        buttons.append([InlineKeyboardButton(
+            color.name,
+            callback_data=f"color_{color.id}"
+        )])
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # price_menu
 btn_price_500 = InlineKeyboardButton("~500", callback_data="price_500")
@@ -208,9 +220,7 @@ btn_all_flowers = InlineKeyboardButton(
 
 main_menu_kb = InlineKeyboardMarkup(main_menu_buttons)
 
-shade_menu_kb = InlineKeyboardMarkup([
-    [btn_shade],
-])
+shade_menu_kb = generate_shade_kb()
 
 price_kb = InlineKeyboardMarkup([
     [btn_price_500],

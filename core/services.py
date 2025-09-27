@@ -27,7 +27,7 @@ def get_all_occasions():
     return list(Occasion.objects.all())
 
 
-def get_all_color():
+def get_all_colors():
     return list(Color.objects.all())
 
 

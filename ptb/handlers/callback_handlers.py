@@ -1,3 +1,4 @@
+import asyncio
 from . import states_bot
 from .utils_handler import (
     send_pdf, format_date_for_display,
@@ -9,6 +10,7 @@ from ptb.keyboards.keyboard import (
     remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
     back_to_main_menu_kb
 )
+from core.services import get_all_colors
 
 
 async def handler_main_menu(update, context):
@@ -29,10 +31,12 @@ async def handler_main_menu(update, context):
         for occasion in occasions:
             if str(occasion.id) == occasion_id:
                 context.user_data['event'] = occasion.name
+                context.user_data['occasion_id'] = occasion_id
                 break
 
     elif query.data in ["no_reason"]:
         context.user_data['event'] = "Без повода"
+        context.user_data['occasion_id'] = None
 
     await query.edit_message_text(
         text="Отлично! Теперь подберем оттенок, который вам по душе:",
@@ -45,6 +49,20 @@ async def handler_shade_menu(update, context):
     '''Обработчик меню оттенков'''
     query = update.callback_query
     await query.answer()
+
+    if query.data.startswith("color_"):
+        color_id = query.data.replace("color_", "")
+
+        colors = await asyncio.to_thread(get_all_colors)
+
+        for color in colors:
+            if str(color.id) == color_id:
+                context.user_data['color'] = color.name
+                context.user_data['color_id'] = color_id
+                break
+        else:
+            context.user_data['color'] = "Не указано"
+            context.user_data['color_id'] = None
 
     await query.edit_message_text(
         text="На какую сумму рассчитываете?",
@@ -287,6 +305,7 @@ async def handler_back_to_main(update, context):
 async def handler_other_event(update, context):
     '''Обработчик другого события'''
     context.user_data['event'] = update.message.text
+    context.user_data['occasion_id'] = None
     await update.message.reply_text(
         "Замечательно! Теперь подберем оттенок, который вам по душе:",
         reply_markup=shade_menu_kb
