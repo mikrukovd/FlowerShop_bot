@@ -16,4 +16,5 @@
     OPD_CONSULT,
     NAME_CONSULT,
     PHONE_CONSULT,
-) = range(17)
+    ORDER_COMPLETED,
+) = range(18)

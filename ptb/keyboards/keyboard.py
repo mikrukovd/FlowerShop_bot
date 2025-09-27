@@ -195,6 +195,8 @@ def generate_delivery_time_kb(callback_date=None):
 btn_yes = InlineKeyboardButton("Да", callback_data="yes")
 btn_no = InlineKeyboardButton("Нет", callback_data="no")
 
+#back_to_main_menu
+btn_back_to_main_menu = InlineKeyboardButton("Вернуться в главное меню", callback_data="back_to_main_menu")
 
 # all_flowers
 btn_all_flowers = InlineKeyboardButton(
@@ -248,4 +250,8 @@ yes_no_kb = InlineKeyboardMarkup([
 
 all_flowers_kb = InlineKeyboardMarkup([
     [btn_all_flowers],
+])
+
+back_to_main_menu_kb = InlineKeyboardMarkup([
+    [btn_back_to_main_menu]
 ])

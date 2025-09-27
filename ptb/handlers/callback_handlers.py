@@ -6,7 +6,8 @@ from .utils_handler import (
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
     confirm_order_kb, main_menu_kb, yes_no_kb, occasions,
-    remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb
+    remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
+    back_to_main_menu_kb
 )
 
 
@@ -253,21 +254,34 @@ async def handler_confirm_order(update, context):
     if query.data == "confirm_order":
         await query.edit_message_text(
             text="🎉 *Заказ подтвержден!* Спасибо, что выбрали нас! Ожидайте доставку в указанное время.",
-            reply_markup=main_menu_kb,
+            reply_markup=back_to_main_menu_kb,
             parse_mode='Markdown'
         )
         # await send_order_to_courier(context, courier_chat_id="")  # TODO: Заменить на ID чата курьера
         # TODO: Внесение информации о заказе в базу данных
-        return states_bot.MAIN_MENU
+        return states_bot.ORDER_COMPLETED
 
     elif query.data == "cancel_order":
         await query.edit_message_text(
-            text="Главное меню",
-            reply_markup=main_menu_kb
+            text="❌ *Заказ отменен.* Если передумаете - будем рады помочь с выбором букета!",
+            reply_markup=back_to_main_menu_kb,
+            parse_mode='Markdown'
         )
-        return states_bot.MAIN_MENU
+        return states_bot.ORDER_COMPLETED
 
     return states_bot.CONFIRM_ORDER
+
+
+async def handler_back_to_main(update, context):
+    '''Обработчик возврата в главное меню'''
+    query = update.callback_query
+    await query.answer()
+
+    await query.edit_message_text(
+        text="Главное меню",
+        reply_markup=main_menu_kb
+    )
+    return states_bot.MAIN_MENU
 
 
 async def handler_other_event(update, context):

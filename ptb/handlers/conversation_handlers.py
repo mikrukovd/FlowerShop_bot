@@ -65,6 +65,9 @@ conversation_handler = ConversationHandler(
         states_bot.PHONE_CONSULT: [
             MessageHandler(filters.TEXT & ~filters.COMMAND, callback_handlers.handler_phone_consult)
         ],
+        states_bot.ORDER_COMPLETED: [
+            CallbackQueryHandler(callback_handlers.handler_back_to_main),
+        ],
     },
     fallbacks=[CommandHandler("start", cmd_handlers.start)],
 )
