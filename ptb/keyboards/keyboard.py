@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
-from core.services import get_all_occasions, get_all_colors, get_all_bouquets
+from core.services import get_all_occasions, get_all_colors, get_all_bouquets, get_bouquet, get_bouquet_composition_names
 
 # TODO: нужно будет переписать по другому
 occasions = get_all_occasions()
@@ -57,15 +57,28 @@ btn_need_consult = InlineKeyboardButton(
     callback_data="need_consult"
 )
 
+
 # remove_flower_menu
-btn_remove_flower = InlineKeyboardButton(
-    "Убрать цветок",
-    callback_data="remove_flower"
-)
-btn_remove_nothing = InlineKeyboardButton(
-    "Не убирать ничего",
-    callback_data="remove_nothing"
-)
+def generate_remove_flower_kb(bouquet_id):
+    '''Генерация клавиатуры удаления цветков из букета'''
+    bouquet = get_bouquet(bouquet_id)
+    composition_names = get_bouquet_composition_names(bouquet)
+
+    buttons = []
+
+    for flower in composition_names:
+        buttons.append([InlineKeyboardButton(
+            f"Убрать {flower}",
+            callback_data=f"remove_{flower}"
+        )])
+
+    buttons.append([InlineKeyboardButton(
+        "Не убирать ничего",
+        callback_data="remove_nothing"
+    )])
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # opd
 btn_accept = InlineKeyboardButton("Согласен", callback_data="accept")
@@ -244,11 +257,6 @@ choose_flowers_kb = InlineKeyboardMarkup([
     [btn_confirm_flowers],
     [btn_another_flowers],
     [btn_need_consult],
-])
-
-remove_flower_kb = InlineKeyboardMarkup([
-    [btn_remove_flower],
-    [btn_remove_nothing],
 ])
 
 opd_kb = InlineKeyboardMarkup([

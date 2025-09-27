@@ -8,7 +8,7 @@ from .utils_handler import (
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
     confirm_order_kb, main_menu_kb, yes_no_kb, occasions,
-    remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
+    generate_remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
     back_to_main_menu_kb
 )
 from core.services import ( 
@@ -21,6 +21,7 @@ async_get_bouquets = sync_to_async(get_bouquets)
 async_get_bouquet = sync_to_async(get_bouquet)
 async_get_all_bouquets = sync_to_async(get_all_bouquets)
 async_get_bouquet_composition_names = sync_to_async(get_bouquet_composition_names)
+async_generate_remove_flower_kb = sync_to_async(generate_remove_flower_kb)
 
 
 async def handler_main_menu(update, context):
@@ -227,6 +228,17 @@ async def handler_remove_flower(update, context):
     await query.answer()
 
     if query.data == "yes":
+        selected_bouquet_id = context.user_data.get('selected_bouquet')
+
+        if not selected_bouquet_id:
+            await query.edit_message_text(
+                text="❌ Ошибка: букет не выбран",
+                reply_markup=main_menu_kb
+            )
+            return states_bot.MAIN_MENU
+
+        remove_flower_kb = await async_generate_remove_flower_kb(selected_bouquet_id)
+
         text = "Какой цветок вы хотите убрать из букета?"
         await query.edit_message_text(
             text=text,
