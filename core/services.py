@@ -14,7 +14,7 @@ def get_user(id_tg, user_name,):
         defaults={
             "name": user_name,
             'id_tg': id_tg
-        }        
+        }
     )
     return user
 
@@ -53,15 +53,19 @@ def get_bouquets(occasion, color=None, start_price=None, end_price=None):
     return list(Bouquet.objects.filter(**filters))
 
 
-def create_order(user, name, address, phone, bouquet, delivery_date):
-    Order.objects.create(
+def create_order(user, name, phone, address, bouquet_id, delivery_date, removed_flower=None):
+    bouquet = Bouquet.objects.get(id=bouquet_id)
+
+    order = Order.objects.create(
         user=user,
         name=name,
-        address=address,
         phone=phone,
+        address=address,
         bouquet=bouquet,
         delivery_date=delivery_date,
+        removed_flower=removed_flower
     )
+    return order
 
 
 def get_bouquet_composition_names(bouquet):

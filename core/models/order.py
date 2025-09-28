@@ -40,6 +40,12 @@ class Order(models.Model):
         blank=False,
         null=True
     )
+    removed_flower = models.CharField(
+        verbose_name='Удаленный цветок',
+        max_length=100,
+        blank=True,
+        null=True
+    )
     is_deliverd = models.BooleanField(
         verbose_name='Доставлен',
         blank=False,
