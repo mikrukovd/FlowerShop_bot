@@ -31,6 +31,10 @@ async def handler_main_menu(update, context):
         )
         return states_bot.OTHER_EVENT
 
+    elif query.data == "no_reason":
+        context.user_data['event'] = "Без повода"
+        context.user_data['occasion_id'] = None
+
     elif query.data.startswith("occasion_"):
         occasion_id = query.data.replace("occasion_", "")
 

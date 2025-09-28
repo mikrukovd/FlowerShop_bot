@@ -11,10 +11,12 @@ for occasion in occasions:
         occasion.name,
         callback_data=f"occasion_{occasion.id}"
     )])
+btn_no_reason = InlineKeyboardButton("Без повода", callback_data="no_reason")
 btn_any_reason = InlineKeyboardButton("Другой повод", callback_data="any_reason")
 
 # main_menu_with_db
 main_menu_buttons = occasion_buttons + [
+    [btn_no_reason],
     [btn_any_reason],
 ]
 
