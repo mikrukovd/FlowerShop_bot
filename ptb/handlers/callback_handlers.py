@@ -117,16 +117,32 @@ async def handler_price_menu(update, context):
                 f"*Состав:* {composition_text}\n"
                 f"*Стоимость:* {bouquet.price} руб.\n\n"
                 "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
+
+        await query.delete_message()
+
+        if bouquet.image:
+            await query.message.reply_photo(
+                photo=bouquet.image,
+                caption=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
+        else:
+            await query.message.reply_text(
+                text=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
     else:
         text = ("😔 *К сожалению, по вашим параметрам ничего не найдено*\n\n"
                 "Попробуйте изменить критерии поиска или посмотрите всю нашу коллекцию")
         context.user_data['selected_bouquet'] = None
+        await query.edit_message_text(
+            text=text,
+            reply_markup=choose_flowers_kb,
+            parse_mode='Markdown'
+        )
 
-    await query.edit_message_text(
-        text=text,
-        reply_markup=choose_flowers_kb,
-        parse_mode='Markdown'
-    )
     return states_bot.FLOWERS
 
 
@@ -137,21 +153,24 @@ async def handler_flowers(update, context):
 
     if query.data == "confirm_flowers":
         if not context.user_data.get('selected_bouquet'):
-            await query.edit_message_text(
+            await query.delete_message()
+            await query.message.reply_text(
                 text="❌ Не удалось найти подходящий букет. Попробуйте изменить параметры поиска.",
                 reply_markup=main_menu_kb
             )
             return states_bot.MAIN_MENU
 
+        await query.delete_message()
         text = "Хотите убрать какой-нибудь цветок из букета?"
-        await query.edit_message_text(
+        await query.message.reply_text(
             text=text,
             reply_markup=yes_no_kb
         )
         return states_bot.REMOVE_FLOWER
 
     elif query.data == "all_flowers":
-        await query.edit_message_text(
+        await query.delete_message()
+        await query.message.reply_text(
             text="🌸 *Вся наша коллекция букетов:*",
             reply_markup=all_flowers_kb,
             parse_mode='Markdown'
@@ -173,11 +192,21 @@ async def handler_flowers(update, context):
                 f"*Стоимость:* {selected_bouquet.price} руб.\n\n"
                 "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
 
-        await query.edit_message_text(
-            text=text,
-            reply_markup=choose_flowers_kb,
-            parse_mode='Markdown'
-        )
+        await query.delete_message()
+
+        if selected_bouquet.image:
+            await query.message.reply_photo(
+                photo=selected_bouquet.image,
+                caption=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
+        else:
+            await query.message.reply_text(
+                text=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
         return states_bot.FLOWERS
 
     elif query.data == "need_consult":
@@ -208,11 +237,21 @@ async def handler_all_flowers(update, context):
                 f"*Стоимость:* {selected_bouquet.price} руб.\n\n"
                 "*Хотите что-то еще более уникальное?* Подберите другой букет из нашей коллекции или закажите консультацию флориста")
 
-        await query.edit_message_text(
-            text=text,
-            reply_markup=choose_flowers_kb,
-            parse_mode='Markdown'
-        )
+        await query.delete_message()
+
+        if selected_bouquet.image:
+            await query.message.reply_photo(
+                photo=selected_bouquet.image,
+                caption=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
+        else:
+            await query.message.reply_text(
+                text=text,
+                reply_markup=choose_flowers_kb,
+                parse_mode='Markdown'
+            )
         return states_bot.FLOWERS
 
     return states_bot.ALL_FLOWERS
