@@ -1,27 +1,22 @@
 import random
+from datetime import datetime
 from asgiref.sync import sync_to_async
 from . import states_bot
 from .utils_handler import (
     send_pdf, format_date_for_display,
-    format_time_for_display, send_order_to_courier, send_consultation_to_florist
+    format_time_for_display, send_order_to_courier,
+    send_consultation_to_florist
 )
 from ptb.keyboards.keyboard import (
     shade_menu_kb, price_kb, choose_flowers_kb, delivery_date_kb,
     confirm_order_kb, main_menu_kb, yes_no_kb, occasions,
-    generate_remove_flower_kb, opd_kb, all_flowers_kb, generate_delivery_time_kb,
-    back_to_main_menu_kb
+    generate_remove_flower_kb, opd_kb, all_flowers_kb,
+    generate_delivery_time_kb, back_to_main_menu_kb
 )
 from core.services import (
-    get_all_colors, get_bouquets, get_bouquet,
-    get_all_bouquets, get_bouquet_composition_names
+    get_all_colors, get_bouquets, get_bouquet, get_user,
+    get_bouquet_composition_names, create_order
 )
-
-async_get_all_colors = sync_to_async(get_all_colors)
-async_get_bouquets = sync_to_async(get_bouquets)
-async_get_bouquet = sync_to_async(get_bouquet)
-async_get_all_bouquets = sync_to_async(get_all_bouquets)
-async_get_bouquet_composition_names = sync_to_async(get_bouquet_composition_names)
-async_generate_remove_flower_kb = sync_to_async(generate_remove_flower_kb)
 
 
 async def handler_main_menu(update, context):
@@ -31,7 +26,7 @@ async def handler_main_menu(update, context):
 
     if query.data == "any_reason":
         await query.edit_message_text(
-            text="Напишите, к какому событию готовимся?",
+            text=("Напишите, к какому событию готовимся?"),
             reply_markup=None
         )
         return states_bot.OTHER_EVENT
@@ -46,7 +41,7 @@ async def handler_main_menu(update, context):
                 break
 
     await query.edit_message_text(
-        text="Отлично! Теперь подберем оттенок, который вам по душе:",
+        text=("Отлично! Теперь подберем оттенок, который вам по душе:"),
         reply_markup=shade_menu_kb
     )
     return states_bot.SHADE_MENU
@@ -60,7 +55,7 @@ async def handler_shade_menu(update, context):
     if query.data.startswith("color_"):
         color_id = query.data.replace("color_", "")
 
-        colors = await async_get_all_colors()
+        colors = await sync_to_async(get_all_colors)()
 
         for color in colors:
             if str(color.id) == color_id:
@@ -72,7 +67,7 @@ async def handler_shade_menu(update, context):
             context.user_data['color_id'] = None
 
     await query.edit_message_text(
-        text="На какую сумму рассчитываете?",
+        text=("На какую сумму рассчитываете?"),
         reply_markup=price_kb
     )
     return states_bot.PRICE_MENU
@@ -99,7 +94,7 @@ async def handler_price_menu(update, context):
     elif query.data == "price_any":
         price_filters = {}
 
-    bouquets = await async_get_bouquets(
+    bouquets = await sync_to_async(get_bouquets)(
         occasion=occasion_id,
         color=color_id,
         **price_filters
@@ -109,7 +104,7 @@ async def handler_price_menu(update, context):
         bouquet = random.choice(bouquets)
         context.user_data['selected_bouquet'] = bouquet.id
 
-        composition_names = await async_get_bouquet_composition_names(bouquet)
+        composition_names = await sync_to_async(get_bouquet_composition_names)(bouquet)
         composition_text = ", ".join(composition_names)
 
         text = (f"🌸 *{bouquet.name}* 🌸\n\n"
@@ -155,7 +150,7 @@ async def handler_flowers(update, context):
         if not context.user_data.get('selected_bouquet'):
             await query.delete_message()
             await query.message.reply_text(
-                text="❌ Не удалось найти подходящий букет. Попробуйте изменить параметры поиска.",
+                text=("❌ Не удалось найти подходящий букет. Попробуйте изменить параметры поиска."),
                 reply_markup=main_menu_kb
             )
             return states_bot.MAIN_MENU
@@ -171,7 +166,7 @@ async def handler_flowers(update, context):
     elif query.data == "all_flowers":
         await query.delete_message()
         await query.message.reply_text(
-            text="🌸 *Вся наша коллекция букетов:*",
+            text=("🌸 *Вся наша коллекция букетов:*"),
             reply_markup=all_flowers_kb,
             parse_mode='Markdown'
         )
@@ -180,10 +175,10 @@ async def handler_flowers(update, context):
     elif query.data.startswith("bouquet_"):
         bouquet_id = query.data.replace("bouquet_", "")
 
-        selected_bouquet = await async_get_bouquet(int(bouquet_id))
+        selected_bouquet = await sync_to_async(get_bouquet)(int(bouquet_id))
         context.user_data['selected_bouquet'] = selected_bouquet.id
 
-        composition_names = await async_get_bouquet_composition_names(selected_bouquet)
+        composition_names = await sync_to_async(get_bouquet_composition_names)(selected_bouquet)
         composition_text = ", ".join(composition_names)
 
         text = (f"🌸 *{selected_bouquet.name}* 🌸\n\n"
@@ -225,10 +220,10 @@ async def handler_all_flowers(update, context):
     if query.data.startswith("bouquet_"):
         bouquet_id = query.data.replace("bouquet_", "")
 
-        selected_bouquet = await async_get_bouquet(int(bouquet_id))
+        selected_bouquet = await sync_to_async(get_bouquet)(int(bouquet_id))
         context.user_data['selected_bouquet'] = selected_bouquet.id
 
-        composition_names = await async_get_bouquet_composition_names(selected_bouquet)
+        composition_names = await sync_to_async(get_bouquet_composition_names)(selected_bouquet)
         composition_text = ", ".join(composition_names)
 
         text = (f"🌸 *{selected_bouquet.name}* 🌸\n\n"
@@ -267,12 +262,12 @@ async def handler_remove_flower(update, context):
 
         if not selected_bouquet_id:
             await query.edit_message_text(
-                text="❌ Ошибка: букет не выбран",
+                text=("❌ Ошибка: букет не выбран"),
                 reply_markup=main_menu_kb
             )
             return states_bot.MAIN_MENU
 
-        remove_flower_kb = await async_generate_remove_flower_kb(selected_bouquet_id)
+        remove_flower_kb = await sync_to_async(generate_remove_flower_kb)(selected_bouquet_id)
 
         text = "Какой цветок вы хотите убрать из букета?"
         await query.edit_message_text(
@@ -310,11 +305,11 @@ async def handler_opd(update, context):
         return states_bot.NAME
 
     elif query.data == "decline":
-        text = '''✨ *Превратим эмоции в цветы!*
+        text = ('''✨ *Превратим эмоции в цветы!*
 
 Каждый букет — это история. Для какого момента создадим вашу?
 • Готовые поводы ниже
-• Или свой особенный случай'''
+• Или свой особенный случай''')
         await query.delete_message()
         await query.message.reply_text(text=text, reply_markup=main_menu_kb)
         return states_bot.MAIN_MENU
@@ -354,7 +349,7 @@ async def handler_date(update, context):
     context.user_data['date'] = query.data
     delivery_time_kb = generate_delivery_time_kb(query.data)
     await query.edit_message_text(
-        text="⏰ В какое время вам будет удобно принять заказ?",
+        text=("⏰ В какое время вам будет удобно принять заказ?"),
         reply_markup=delivery_time_kb
     )
     return states_bot.TIME
@@ -402,18 +397,42 @@ async def handler_confirm_order(update, context):
     await query.answer()
 
     if query.data == "confirm_order":
+        user = await sync_to_async(get_user)(
+            update.effective_user.id,
+            update.effective_user.username or update.effective_user.first_name
+        )
+        # Для сохранения корректной даты
+        date_str = context.user_data['date'][5:]
+        time_code = context.user_data['time'][5:]
+        time_str = f"{time_code[:2]}:{time_code[2:]}:00"
+
+        delivery_datetime = datetime.strptime(f"{date_str} {time_str}", '%Y-%m-%d %H:%M:%S')
+
+        await sync_to_async(create_order)(
+            user=user,
+            name=context.user_data['name'],
+            phone=context.user_data['phone'],
+            address=context.user_data['address'],
+            bouquet_id=context.user_data['selected_bouquet'],
+            delivery_date=delivery_datetime,
+            removed_flower=context.user_data.get('removed_flower')
+        )
+
+        context.user_data.clear()
+
         await query.edit_message_text(
-            text="🎉 *Заказ подтвержден!* Спасибо, что выбрали нас! Ожидайте доставку в указанное время.",
+            text=("🎉 *Заказ подтвержден!* Спасибо, что выбрали нас! Ожидайте доставку в указанное время."),
             reply_markup=back_to_main_menu_kb,
             parse_mode='Markdown'
         )
         # await send_order_to_courier(context, courier_chat_id=)  # TODO: Заменить на ID чата курьера
-        # TODO: Внесение информации о заказе в базу данных
         return states_bot.ORDER_COMPLETED
 
     elif query.data == "cancel_order":
+        context.user_data.clear()
+
         await query.edit_message_text(
-            text="❌ *Заказ отменен.* Если передумаете - будем рады помочь с выбором букета!",
+            text=("❌ *Заказ отменен.* Если передумаете - будем рады помочь с выбором букета!"),
             reply_markup=back_to_main_menu_kb,
             parse_mode='Markdown'
         )
@@ -426,11 +445,11 @@ async def handler_back_to_main(update, context):
     '''Обработчик возврата в главное меню'''
     query = update.callback_query
     await query.answer()
-    text = '''✨ *Превратим эмоции в цветы!*
+    text = ('''✨ *Превратим эмоции в цветы!*
 
 Каждый букет — это история. Для какого момента создадим вашу?
 • Готовые поводы ниже
-• Или свой особенный случай'''
+• Или свой особенный случай''')
 
     await query.edit_message_text(
         text=text,
@@ -461,11 +480,11 @@ async def handler_opd_consult(update, context):
         return states_bot.NAME_CONSULT
 
     elif query.data == "decline":
-        text = '''✨ *Превратим эмоции в цветы!*
+        text = ('''✨ *Превратим эмоции в цветы!*
 
 Каждый букет — это история. Для какого момента создадим вашу?
 • Готовые поводы ниже
-• Или свой особенный случай'''
+• Или свой особенный случай''')
         await query.delete_message()
         await query.message.reply_text(
             text=text,
