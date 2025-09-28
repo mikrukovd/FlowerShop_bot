@@ -45,10 +45,6 @@ async def handler_main_menu(update, context):
                 context.user_data['occasion_id'] = occasion_id
                 break
 
-    elif query.data in ["no_reason"]:
-        context.user_data['event'] = "Без повода"
-        context.user_data['occasion_id'] = None
-
     await query.edit_message_text(
         text="Отлично! Теперь подберем оттенок, который вам по душе:",
         reply_markup=shade_menu_kb
@@ -348,7 +344,7 @@ async def handler_time(update, context):
 *Адрес:* {context.user_data.get('address', 'Не указан')}
 *Дата:* {formatted_date}
 *Время:* {formatted_time}
-*Корректировки:* {context.user_data.get('removed_flower', 'без изменений')}
+*Корректировки:* Убрать {context.user_data.get('removed_flower', 'без изменений')}
 *Стоимость:* 1500 руб.
 
 Всё верно?
@@ -372,7 +368,7 @@ async def handler_confirm_order(update, context):
             reply_markup=back_to_main_menu_kb,
             parse_mode='Markdown'
         )
-        # await send_order_to_courier(context, courier_chat_id="")  # TODO: Заменить на ID чата курьера
+        # await send_order_to_courier(context, courier_chat_id=)  # TODO: Заменить на ID чата курьера
         # TODO: Внесение информации о заказе в базу данных
         return states_bot.ORDER_COMPLETED
 
@@ -452,7 +448,7 @@ async def handler_name_consult(update, context):
 async def handler_phone_consult(update, context):
     '''Обработчик ввода телефона для консультации'''
     context.user_data['consult_phone'] = update.message.text
-    # await send_consultation_to_florist(context, florist_chat_id="")  # TODO: Заменить на ID чата флориста
+    # await send_consultation_to_florist(context, florist_chat_id=)  # TODO: Заменить на ID чата флориста
     await update.message.reply_text(
         "✅ *Флорист скоро свяжется с вами!* А пока можете присмотреть что-нибудь из готовой коллекции:",
         reply_markup=all_flowers_kb,
