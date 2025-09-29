@@ -47,7 +47,7 @@ async def send_order_to_courier(context, courier_chat_id):
 Дата: {formatted_date}
 Время: {formatted_time}
 Удаленные цветы: {context.user_data.get('removed_flower', 'не удалялись')}
-Цена: 1500 руб.
+Цена: {context.user_data.get('bouquet_price')} руб.
 """
     await context.bot.send_message(
         chat_id=courier_chat_id,

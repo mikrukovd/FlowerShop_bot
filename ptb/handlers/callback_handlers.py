@@ -107,6 +107,7 @@ async def handler_price_menu(update, context):
     if bouquets:
         bouquet = random.choice(bouquets)
         context.user_data['selected_bouquet'] = bouquet.id
+        context.user_data['bouquet_price'] = bouquet.price
 
         composition_names = await sync_to_async(get_bouquet_composition_names)(bouquet)
         composition_text = ", ".join(composition_names)
@@ -226,6 +227,7 @@ async def handler_all_flowers(update, context):
 
         selected_bouquet = await sync_to_async(get_bouquet)(int(bouquet_id))
         context.user_data['selected_bouquet'] = selected_bouquet.id
+        context.user_data['bouquet_price'] = selected_bouquet.price
 
         composition_names = await sync_to_async(get_bouquet_composition_names)(selected_bouquet)
         composition_text = ", ".join(composition_names)
@@ -383,7 +385,7 @@ async def handler_time(update, context):
 *Дата:* {formatted_date}
 *Время:* {formatted_time}
 *Корректировки:* Убрать {context.user_data.get('removed_flower', 'без изменений')}
-*Стоимость:* 1500 руб.
+*Стоимость:* {context.user_data.get('bouquet_price')} руб.
 
 Всё верно?
 """
@@ -422,8 +424,6 @@ async def handler_confirm_order(update, context):
             removed_flower=context.user_data.get('removed_flower')
         )
 
-        context.user_data.clear()
-
         await query.edit_message_text(
             text=("🎉 *Заказ подтвержден!* Спасибо, что выбрали нас! Ожидайте доставку в указанное время."),
             reply_markup=back_to_main_menu_kb,
@@ -431,6 +431,7 @@ async def handler_confirm_order(update, context):
         )
         courier_chat_id = context.application.bot_data['courier_chat_id']
         await send_order_to_courier(context, courier_chat_id=courier_chat_id)
+        context.user_data.clear()
 
         return states_bot.ORDER_COMPLETED
 
