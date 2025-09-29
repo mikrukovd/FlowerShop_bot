@@ -50,6 +50,8 @@ DEBUG=ваша_настройка
 ALLOWED_HOSTS=ваша_настройка
 TG_BOT_TOKEN=ваш_токен
 ALLOWED_HOSTS=ваши_данные
+COURIER_CHAT_ID=id_чата_курьера
+FLORIST_CHAT_ID=id_чата_флориста
 ```
 4. Настройте проект Django, указав необходимые параметры в файле settings.py.
 ```
