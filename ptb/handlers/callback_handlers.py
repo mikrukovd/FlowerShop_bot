@@ -429,7 +429,9 @@ async def handler_confirm_order(update, context):
             reply_markup=back_to_main_menu_kb,
             parse_mode='Markdown'
         )
-        # await send_order_to_courier(context, courier_chat_id=)  # TODO: Заменить на ID чата курьера
+        courier_chat_id = context.application.bot_data['courier_chat_id']
+        await send_order_to_courier(context, courier_chat_id=courier_chat_id)
+
         return states_bot.ORDER_COMPLETED
 
     elif query.data == "cancel_order":
@@ -510,7 +512,8 @@ async def handler_name_consult(update, context):
 async def handler_phone_consult(update, context):
     '''Обработчик ввода телефона для консультации'''
     context.user_data['consult_phone'] = update.message.text
-    # await send_consultation_to_florist(context, florist_chat_id=)  # TODO: Заменить на ID чата флориста
+    florist_chat_id = context.application.bot_data['florist_chat_id']
+    await send_consultation_to_florist(context, florist_chat_id=florist_chat_id)
     await update.message.reply_text(
         "✅ *Флорист скоро свяжется с вами!* А пока можете присмотреть что-нибудь из готовой коллекции:",
         reply_markup=all_flowers_kb,

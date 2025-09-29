@@ -16,6 +16,10 @@ from ptb.handlers.conversation_handlers import conversation_handler
 
 def main():
     app = ApplicationBuilder().token(env.str("TG_BOT_TOKEN")).build()
+    app.bot_data.update({
+        'courier_chat_id': env.str("COURIER_CHAT_ID"),
+        'florist_chat_id': env.str("FLORIST_CHAT_ID")
+    })
     app.add_handler(conversation_handler)
     app.run_polling()
 
