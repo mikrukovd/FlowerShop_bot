@@ -332,9 +332,18 @@ async def handler_name(update, context):
 
 async def handler_phone(update, context):
     '''Обработчик ввода телефона'''
-    context.user_data['phone'] = update.message.text
-    await update.message.reply_text("🏠 На какой адрес доставить букет?")
-    return states_bot.ADDRESS
+    phone = ''.join(filter(str.isdigit, update.message.text))
+    
+    if len(phone) == 11 and phone[0] in ['7', '8']:
+        context.user_data['phone'] = phone
+        await update.message.reply_text("🏠 На какой адрес доставить букет?")
+        return states_bot.ADDRESS
+    else:
+        await update.message.reply_text(
+            "❌ Введите номер из 11 цифр (начинается с 7 или 8)\n"
+            "Пример: 79161234567"
+        )
+        return states_bot.PHONE
 
 
 async def handler_address(update, context):
@@ -512,12 +521,21 @@ async def handler_name_consult(update, context):
 
 async def handler_phone_consult(update, context):
     '''Обработчик ввода телефона для консультации'''
-    context.user_data['consult_phone'] = update.message.text
-    florist_chat_id = context.application.bot_data['florist_chat_id']
-    await send_consultation_to_florist(context, florist_chat_id=florist_chat_id)
-    await update.message.reply_text(
-        "✅ *Флорист скоро свяжется с вами!* А пока можете присмотреть что-нибудь из готовой коллекции:",
-        reply_markup=all_flowers_kb,
-        parse_mode='Markdown'
-    )
-    return states_bot.ALL_FLOWERS
+    phone = ''.join(filter(str.isdigit, update.message.text))
+    
+    if len(phone) == 11 and phone[0] in ['7', '8']:
+        context.user_data['consult_phone'] = phone
+        florist_chat_id = context.application.bot_data['florist_chat_id']
+        await send_consultation_to_florist(context, florist_chat_id=florist_chat_id)
+        await update.message.reply_text(
+            "✅ *Флорист скоро свяжется с вами!* А пока можете присмотреть что-нибудь из готовой коллекции:",
+            reply_markup=all_flowers_kb,
+            parse_mode='Markdown'
+        )
+        return states_bot.ALL_FLOWERS
+    else:
+        await update.message.reply_text(
+            "❌ Введите номер из 11 цифр (начинается с 7 или 8)\n"
+            "Пример: 79161234567"
+        )
+        return states_bot.PHONE_CONSULT
